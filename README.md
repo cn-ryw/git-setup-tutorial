@@ -1,22 +1,79 @@
-# Git 安装、配置与上传 GitHub 完整教程
+<p align="center">
+  <img src="https://img.shields.io/github/stars/cn-ryw/git-setup-tutorial?style=social" alt="Stars">
+  <img src="https://img.shields.io/github/license/cn-ryw/git-setup-tutorial" alt="License">
+  <img src="https://img.shields.io/github/last-commit/cn-ryw/git-setup-tutorial" alt="Last Commit">
+  <img src="https://img.shields.io/github/languages/top/cn-ryw/git-setup-tutorial" alt="Top Language">
+</p>
 
-> 面向零基础用户，手把手教你从安装 Git 到将代码推送到 GitHub。
+<h1 align="center">Git 从零到精通：安装、配置与 GitHub 上传完全指南</h1>
+
+<p align="center">
+  <strong>面向零基础初学者 | 手把手教学 | 含常见问题排查</strong>
+</p>
+
+<p align="center">
+  <a href="#快速开始">快速开始</a> •
+  <a href="#目录">目录</a> •
+  <a href="#常用命令速查表">命令速查</a> •
+  <a href="#常见问题排查">问题排查</a>
+</p>
+
+---
+
+## 为什么需要这份教程？
+
+如果你刚接触编程，或者一直用"拖拽上传"的方式管理代码，这份教程将带你掌握**专业开发者的代码管理方式**。
+
+学完后你将能够：
+
+- 在 Windows / macOS / Linux 上正确安装和配置 Git
+- 用 SSH Key 安全连接 GitHub，告别每次输入密码
+- 掌握 `add → commit → push` 标准工作流
+- 理解分支、合并、.gitignore 等核心概念
+- 独立解决推送失败、权限错误等常见问题
+
+---
+
+## 快速开始
+
+> 如果你已有一定基础，只想快速查阅关键步骤：
+
+```bash
+# 1. 安装 Git → https://git-scm.com/downloads
+# 2. 配置身份
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+
+# 3. 生成 SSH Key 并添加到 GitHub
+ssh-keygen -t ed25519 -C "你的邮箱"
+cat ~/.ssh/id_ed25519.pub          # 复制输出内容 → GitHub Settings → SSH Keys
+
+# 4. 创建仓库并推送
+git init
+git add .
+git commit -m "feat: 首次提交"
+git remote add origin git@github.com:用户名/仓库名.git
+git push -u origin main
+```
 
 ---
 
 ## 目录
 
-1. [Git 与 GitHub 是什么](#1-git-与-github-是什么)
-2. [安装 Git](#2-安装-git)
-3. [Git 全局配置](#3-git-全局配置)
-4. [配置 SSH Key](#4-配置-ssh-key)
-5. [创建本地仓库](#5-创建本地仓库)
-6. [基本工作流](#6-基本工作流)
-7. [推送到 GitHub](#7-推送到-github)
-8. [分支管理基础](#8-分支管理基础)
-9. [.gitignore 文件](#9-gitignore-文件)
-10. [常用命令速查表](#10-常用命令速查表)
-11. [常见问题排查](#11-常见问题排查)
+| 章节 | 内容 |
+|:----:|------|
+| 1 | [Git 与 GitHub 是什么](#1-git-与-github-是什么) |
+| 2 | [安装 Git](#2-安装-git) — Windows · macOS · Linux |
+| 3 | [Git 全局配置](#3-git-全局配置) |
+| 4 | [配置 SSH Key](#4-配置-ssh-key) — 安全免密连接 |
+| 5 | [创建本地仓库](#5-创建本地仓库) |
+| 6 | [基本工作流](#6-基本工作流) — add → commit → push |
+| 7 | [推送到 GitHub](#7-推送到-github) — 远程仓库操作 |
+| 8 | [分支管理基础](#8-分支管理基础) |
+| 9 | [.gitignore 文件](#9-gitignore-文件) |
+| 10 | [常用命令速查表](#10-常用命令速查表) |
+| 11 | [常见问题排查](#11-常见问题排查) |
+| 附录 | [GitHub CLI 快速上手](#附录github-cli-gh-快速上手) |
 
 ---
 
@@ -24,10 +81,12 @@
 
 | 概念 | 说明 |
 |------|------|
-| **Git** | 分布式版本控制系统，用于跟踪文件变化、协作开发。运行在本地。 |
-| **GitHub** | 基于 Git 的代码托管平台（云端），提供远程仓库、PR 审查、Issue 跟踪等功能。 |
+| **Git** | 分布式版本控制系统。跟踪文件的每一次修改，可以随时回退到任意历史版本。运行在本地电脑上。 |
+| **GitHub** | 基于 Git 的云端代码托管平台。提供远程仓库、Pull Request 代码审查、Issue 任务跟踪、Actions 自动化等协作功能。 |
 
-**简单类比：** Git 是你电脑上的"存档管理器"；GitHub 是云端"存档共享平台"。
+> **一句话理解：** Git = 本地版本管理器；GitHub = 云端代码协作平台。
+
+许多新手误以为是同一个东西——实际上你可以只用 Git 而不碰 GitHub，但**两者结合才是现代软件开发的标配**。
 
 ---
 
@@ -35,16 +94,19 @@
 
 ### Windows
 
-1. 访问 [git-scm.com](https://git-scm.com/downloads/win) 下载安装包
-2. 运行安装程序，推荐选项：
-   - 编辑器选择：**VS Code**（或其他你喜欢的编辑器）
-   - 默认分支名：选择 **main**（或保持 `master`，建议用 `main`）
-   - PATH 环境：选择 **"Git from the command line and also from 3rd-party software"**
-   - HTTPS 传输：选择 **"Use the OpenSSL library"**
-   - 换行符处理：选择 **"Checkout Windows-style, commit Unix-style line endings"**
-   - 终端模拟器：选择 **"Use MinTTY"**
-   - 其余选项保持默认，一路 Next
-3. 安装完成后，打开终端验证：
+1. 访问 [git-scm.com/downloads/win](https://git-scm.com/downloads/win) 下载 `.exe` 安装包
+2. 运行安装程序，**以下选项建议照此设置**（其余默认即可）：
+
+| 步骤 | 建议选项 | 原因 |
+|------|----------|------|
+| 编辑器 | **VS Code** | 提交信息编辑体验好 |
+| 默认分支名 | **Override → main** | 行业新标准 |
+| PATH 环境 | **Git from the command line...** | 终端中随处可用 |
+| HTTPS 传输 | **Use the OpenSSL library** | 兼容性最好 |
+| 换行符 | **Checkout Windows-style, commit Unix-style** | 跨平台协作不乱码 |
+| 终端模拟器 | **Use MinTTY** | 比 Windows 自带终端好用 |
+
+3. 验证安装：
    ```bash
    git --version
    # 输出示例：git version 2.54.0.windows.1
@@ -53,88 +115,77 @@
 ### macOS
 
 ```bash
-# 方式一：通过 Homebrew 安装（推荐）
+# 推荐：Homebrew 安装
 brew install git
 
-# 方式二：通过 Xcode Command Line Tools
+# 备选：Xcode 命令行工具
 xcode-select --install
 ```
 
-### Linux (Debian/Ubuntu)
+### Linux
 
 ```bash
-sudo apt update
-sudo apt install git
+# Debian / Ubuntu
+sudo apt update && sudo apt install git
+
+# Fedora
+sudo dnf install git
+
+# Arch
+sudo pacman -S git
 ```
 
 ---
 
 ## 3. Git 全局配置
 
-安装完成后，首先配置你的身份信息。这些信息会出现在每次提交记录中。
-
 ```bash
-# 设置用户名
+# 设置身份（会写入每次提交记录）
 git config --global user.name "你的名字"
-
-# 设置邮箱（务必与 GitHub 注册邮箱一致）
 git config --global user.email "your-email@example.com"
 
-# 查看配置
+# 查看全部配置
 git config --global --list
 ```
 
-**为什么要与 GitHub 邮箱一致？** GitHub 通过邮箱将提交记录关联到你的账号。邮箱不一致会导致提交记录不被识别为你的贡献。
+> **务必让邮箱与 GitHub 注册邮箱一致**，否则 GitHub 无法将提交关联到你的账号，贡献面板上不会有绿点。
 
 ---
 
 ## 4. 配置 SSH Key
 
-SSH Key 让你无需每次输入密码即可安全连接 GitHub。
+SSH Key 是**一劳永逸**的 GitHub 连接方式：配置一次，以后推送不再需要输入密码。
 
-### 4.1 生成 SSH Key
+### 4.1 生成密钥
 
 ```bash
-# 替换为你的 GitHub 邮箱
 ssh-keygen -t ed25519 -C "your-email@example.com"
 ```
 
-交互提示：
-- `Enter file in which to save the key` → 直接回车（使用默认路径 `~/.ssh/id_ed25519`）
-- `Enter passphrase` → 可直接回车（不设密码）或输入密码
+交互提示均按回车即可（使用默认路径和空密码）。  
+旧系统若报错，改用：`ssh-keygen -t rsa -b 4096 -C "your-email@example.com"`
 
-> 如果系统较旧不支持 Ed25519，可用 `ssh-keygen -t rsa -b 4096 -C "your-email@example.com"`
-
-### 4.2 添加 SSH Key 到 ssh-agent
+### 4.2 启动 ssh-agent 并添加密钥
 
 ```bash
-# 启动 ssh-agent
 eval "$(ssh-agent -s)"
-
-# 添加私钥
 ssh-add ~/.ssh/id_ed25519
 ```
 
 ### 4.3 将公钥添加到 GitHub
 
 ```bash
-# 复制公钥内容
+# 复制公钥
 cat ~/.ssh/id_ed25519.pub
 ```
 
-然后：
-1. 打开 GitHub → 右上角头像 → **Settings**
-2. 左侧菜单 → **SSH and GPG keys**
-3. 点击 **New SSH key**
-4. Title 填写一个便于识别的名称（如"我的 Windows 电脑"）
-5. Key 粘贴刚才复制的公钥内容
-6. 点击 **Add SSH key**
+然后：GitHub → Settings → SSH and GPG keys → New SSH key → 粘贴 → 保存。
 
-### 4.4 测试连接
+### 4.4 验证
 
 ```bash
 ssh -T git@github.com
-# 成功输出：Hi 用户名! You've successfully authenticated.
+# 成功：Hi <用户名>! You've successfully authenticated.
 ```
 
 ---
@@ -142,124 +193,93 @@ ssh -T git@github.com
 ## 5. 创建本地仓库
 
 ```bash
-# 创建项目文件夹
-mkdir my-project
-cd my-project
-
-# 初始化 Git 仓库
-git init
-
-# 创建第一个文件
+mkdir my-project && cd my-project
+git init                        # 初始化，生成 .git 目录
 echo "# My Project" > README.md
-
-# 查看仓库状态
-git status
+git status                      # 随时查看仓库状态
 ```
 
 ---
 
 ## 6. 基本工作流
 
-Git 的日常操作遵循 **三步走** 流程：
+Git 的核心流转模型——理解这张图就理解了 Git：
 
 ```
-工作区 (Working Directory)
-    │  git add
-    ▼
-暂存区 (Staging Area)
-    │  git commit
-    ▼
-本地仓库 (Local Repository)
-    │  git push
-    ▼
-远程仓库 (Remote Repository)
+┌──────────────┐     git add     ┌──────────┐    git commit    ┌────────────┐
+│   工作区      │ ──────────────→ │  暂存区   │ ──────────────→ │  本地仓库   │
+│ (Working Dir) │                │ (Stage)   │                 │  (Repo)     │
+└──────────────┘                └──────────┘                 └──────┬─────┘
+                                                                    │
+                                                            git push │  git pull
+                                                                    │
+                                                               ┌────▼──────┐
+                                                               │  远程仓库  │
+                                                               │ (GitHub)   │
+                                                               └───────────┘
 ```
 
-### 6.1 添加到暂存区
+### 6.1 添加 → 暂存区
 
 ```bash
-# 添加指定文件
-git add README.md
-
-# 添加所有改动
-git add .
-
-# 查看暂存状态
-git status
+git add README.md    # 指定文件
+git add .            # 全部改动
 ```
 
-### 6.2 提交到本地仓库
+### 6.2 提交 → 本地仓库
 
 ```bash
-# 简单提交
-git commit -m "feat: 初始化项目"
+git commit -m "feat: 完成登录功能"
 
-# 详细提交
-git commit -m "feat: 添加用户登录功能
+# 多行提交信息
+git commit -m "feat: 添加用户登录
 
-实现了用户名密码登录，包含表单验证和错误提示。"
+实现用户名密码登录，含表单验证和错误提示。"
 ```
 
-**提交信息规范（约定式提交）：**
+**约定式提交前缀：**
 
-| 类型 | 用途 |
-|------|------|
-| `feat` | 新功能 |
-| `fix` | 修复 bug |
-| `docs` | 文档变更 |
-| `refactor` | 代码重构 |
-| `test` | 测试相关 |
-| `chore` | 杂项（依赖更新等） |
+| 前缀 | 含义 | 示例 |
+|------|------|------|
+| `feat:` | 新功能 | `feat: 添加搜索` |
+| `fix:` | Bug 修复 | `fix: 修复登录超时` |
+| `docs:` | 文档 | `docs: 更新安装说明` |
+| `refactor:` | 重构 | `refactor: 简化认证逻辑` |
+| `test:` | 测试 | `test: 补充登录用例` |
+| `chore:` | 杂项 | `chore: 升级依赖` |
 
 ### 6.3 查看历史
 
 ```bash
-# 提交历史
-git log --oneline
-
-# 图形化历史（含分支）
-git log --oneline --graph --all
+git log --oneline                     # 一行一提交
+git log --oneline --graph --all       # 图形 + 所有分支
 ```
 
 ---
 
 ## 7. 推送到 GitHub
 
-### 7.1 在 GitHub 上创建仓库
+### 7.1 创建远程仓库
 
-**方式一：网页创建**
-1. 打开 [github.com/new](https://github.com/new)
-2. 填写 Repository name
-3. 选择 Public 或 Private
-4. **不要勾选** "Add a README file"（因为本地已有）
-5. 点击 Create repository
+**网页创建：** [github.com/new](https://github.com/new) → 填入名称 → **不要勾选** "Add README" → Create。
 
-**方式二：命令行创建（需安装 GitHub CLI）**
+**命令行创建（推荐）：**
 ```bash
 gh repo create my-project --public --source=. --remote=origin --push
 ```
 
-### 7.2 关联远程仓库并推送
+### 7.2 关联并推送
 
 ```bash
-# 关联远程仓库（推荐 SSH 方式）
 git remote add origin git@github.com:你的用户名/仓库名.git
-
-# 首次推送（-u 建立上游关联，后续只需 git push）
-git push -u origin main
-
-# 后续推送
-git push
+git push -u origin main    # 首次推送（-u 绑定了上游，后续只需 git push）
 ```
 
-### 7.3 克隆已有仓库到本地
+### 7.3 克隆已有仓库
 
 ```bash
-# SSH 方式（推荐）
-git clone git@github.com:用户名/仓库名.git
-
-# HTTPS 方式
-git clone https://github.com/用户名/仓库名.git
+git clone git@github.com:用户名/仓库名.git    # SSH（推荐）
+git clone https://github.com/用户名/仓库名.git # HTTPS
 ```
 
 ---
@@ -267,66 +287,48 @@ git clone https://github.com/用户名/仓库名.git
 ## 8. 分支管理基础
 
 ```bash
-# 查看所有分支
-git branch -a
+git branch feature-payment       # 创建分支
+git checkout feature-payment     # 切换过去
+git checkout -b feature-payment  # 创建 + 切换（一步到位）
 
-# 创建新分支
-git branch feature-login
-
-# 切换分支
-git checkout feature-login
-
-# 创建并切换（一步到位）
-git checkout -b feature-login
-
-# 合并分支到 main
+# 合并回主线
 git checkout main
-git merge feature-login
+git merge feature-payment
 
-# 删除已合并的分支
-git branch -d feature-login
+git branch -d feature-payment    # 删除已合并的分支
 ```
 
-**典型分支工作流：**
+**分支示意图：**
 ```
-main ──────●──────●──────●──── (稳定主线)
+main    ──●──────●──────●────────  （稳定版本）
             \         /
-feature     ●──●──●──  (功能开发)
+feature     ●──●──●──              （独立开发，互不干扰）
 ```
 
 ---
 
 ## 9. .gitignore 文件
 
-有些文件不应纳入版本控制（编译产物、依赖包、密钥等）。
-
-在项目根目录创建 `.gitignore`：
+以下类型的文件**不应提交**到仓库——在项目根目录创建 `.gitignore`：
 
 ```gitignore
-# 依赖目录
-node_modules/
-vendor/
+# 依赖
+node_modules/   vendor/
 
-# 编译产物
-dist/
-build/
-*.exe
-*.dll
+# 构建产物
+dist/   build/   *.exe   *.dll
 
-# 环境变量（含密钥）
-.env
-.env.local
+# 密钥与环境变量
+.env   .env.local   *.pem
 
 # IDE 配置
-.vscode/
-.idea/
+.vscode/   .idea/   *.swp
 
-# 操作系统文件
-.DS_Store
-Thumbs.db
+# 系统文件
+.DS_Store   Thumbs.db
 ```
 
-> GitHub 提供各语言模板：[github/gitignore](https://github.com/github/gitignore)
+> 更多模板：[github/gitignore](https://github.com/github/gitignore)
 
 ---
 
@@ -334,102 +336,114 @@ Thumbs.db
 
 | 命令 | 作用 |
 |------|------|
-| `git init` | 初始化仓库 |
+| `git init` | 初始化本地仓库 |
 | `git clone <url>` | 克隆远程仓库 |
-| `git status` | 查看工作区状态 |
-| `git add <file>` | 添加文件到暂存区 |
+| `git status` | 查看工作区与暂存区状态 |
+| `git add <file>` / `git add .` | 添加文件到暂存区 / 全部添加 |
 | `git commit -m "msg"` | 提交到本地仓库 |
-| `git push` | 推送到远程 |
-| `git pull` | 拉取远程更新并合并 |
-| `git fetch` | 获取远程信息（不合并） |
-| `git branch` | 查看分支列表 |
+| `git push` / `git push -u origin main` | 推送 / 首次推送并绑定上游 |
+| `git pull` / `git pull --rebase` | 拉取合并 / 变基方式拉取 |
+| `git fetch` | 下载远程更新但不合并 |
+| `git branch` / `git branch -a` | 本地分支 / 含远程分支 |
 | `git checkout <branch>` | 切换分支 |
-| `git checkout -b <name>` | 创建并切换分支 |
-| `git merge <branch>` | 合并指定分支到当前分支 |
-| `git log --oneline` | 查看简洁提交历史 |
-| `git diff` | 查看未暂存的改动 |
-| `git reset --soft HEAD~1` | 撤销最近一次 commit（保留修改） |
-| `git stash` / `git stash pop` | 暂存当前工作 / 恢复 |
+| `git checkout -b <name>` | 创建并切换到新分支 |
+| `git merge <branch>` | 合并分支 |
+| `git log --oneline --graph --all` | 图形化提交历史 |
+| `git diff` / `git diff --staged` | 工作区差异 / 暂存区差异 |
+| `git reset --soft HEAD~1` | 撤销最近 commit（保留文件） |
+| `git stash` / `git stash pop` | 暂存修改 / 恢复 |
 | `git remote -v` | 查看远程仓库地址 |
+| `git rm --cached <file>` | 停止跟踪（保留本地文件） |
 
 ---
 
 ## 11. 常见问题排查
 
-### Q1：推送时报 "Permission denied (publickey)"
+<details open>
+<summary><strong>Q1：推送报 "Permission denied (publickey)"</strong></summary>
 
 ```bash
-# 检查 ssh-agent 中是否有密钥
-ssh-add -l
-
-# 重新添加
-ssh-add ~/.ssh/id_ed25519
-
-# 测试 GitHub 连接
-ssh -T git@github.com
+ssh-add -l                      # 检查已加载的密钥
+ssh-add ~/.ssh/id_ed25519       # 重新加载
+ssh -T git@github.com           # 测试连接
 ```
+</details>
 
-### Q2：提交记录不显示在 GitHub 贡献面板上
+<details>
+<summary><strong>Q2：GitHub 贡献面板不显示我的提交</strong></summary>
 
-原因：本地配置的邮箱与 GitHub 注册邮箱不一致。
-
+本地邮箱与 GitHub 注册邮箱不一致导致。检查并修正：
 ```bash
-# 查看当前邮箱
-git config user.email
-
-# 修正为 GitHub 注册邮箱
-git config --global user.email "正确的邮箱@example.com"
-# 注意：只影响以后的提交，历史提交不会改变
+git config user.email                           # 查看
+git config --global user.email "正确邮箱"         # 修正
 ```
+> 只会影响以后的提交，历史提交无法追溯修改。
+</details>
 
-### Q3：推送被拒绝 "Updates were rejected"
+<details>
+<summary><strong>Q3：推送被拒 "Updates were rejected"</strong></summary>
 
+远程有新提交而本地没有，先拉取再推送：
 ```bash
-# 远程有本地没有的更新，先拉取再推送
 git pull --rebase origin main
 git push
 ```
+</details>
 
-### Q4：想撤销最近一次 commit（保留文件改动）
+<details>
+<summary><strong>Q4：撤销最近一次 commit</strong></summary>
 
 ```bash
-git reset --soft HEAD~1
+git reset --soft HEAD~1    # 撤销 commit，文件改动保留在暂存区
+git reset --hard HEAD~1    # 撤销 commit，文件改动也丢弃 ⚠️ 不可恢复
 ```
+</details>
 
-### Q5：不小心提交了不该提交的文件
+<details>
+<summary><strong>Q5：误提交了不该提交的文件</strong></summary>
 
 ```bash
-# 从 Git 跟踪中移除（保留本地文件）
 git rm --cached 文件名
-# 添加到 .gitignore 防止再次提交
 echo "文件名" >> .gitignore
 git commit -m "chore: 移除误提交的文件"
 ```
+</details>
 
-### Q6：修改远程仓库地址
+<details>
+<summary><strong>Q6：修改远程仓库地址</strong></summary>
 
 ```bash
 git remote set-url origin git@github.com:新用户名/新仓库.git
 ```
+</details>
 
 ---
 
 ## 附录：GitHub CLI (`gh`) 快速上手
 
 ```bash
-# Windows 安装
-winget install --id GitHub.cli
+# 安装
+winget install --id GitHub.cli     # Windows
+brew install gh                    # macOS
 
-# 认证登录
+# 认证
 gh auth login
 
-# 查看登录状态
-gh auth status
-
-# 命令行创建仓库
-gh repo create my-repo --public --clone
+# 日常操作
+gh repo create my-project --public --clone    # 创建仓库
+gh repo view 用户名/仓库名                     # 查看仓库信息
+gh issue create --title "标题" --body "内容"   # 创建 Issue
+gh pr create --title "标题" --body "内容"      # 创建 Pull Request
 ```
 
 ---
 
-> **学完本教程，你已掌握 Git 的核心操作。** 日常项目中坚持使用 Git 进行版本管理，熟练后可以进一步学习 rebase、cherry-pick、子模块等进阶主题。
+<br>
+
+<p align="center">
+  <sub>如果这份教程对你有帮助，请给一个 ⭐ Star 支持一下！</sub>
+</p>
+
+<p align="center">
+  <sub>Made with ❤️ by <a href="https://github.com/cn-ryw">cn-ryw</a></sub>
+</p>
